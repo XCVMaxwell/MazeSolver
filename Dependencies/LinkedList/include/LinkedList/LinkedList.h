@@ -16,7 +16,7 @@ namespace LinkedList {
     public:
         LinkedList();
 
-        virtual ~LinkedList();
+        ~LinkedList();
 
         void add(T data);
 
@@ -28,13 +28,13 @@ namespace LinkedList {
 
         void insertBeforeIndex(int index, T data);
 
-        int size();
+        int size() const;
 
-        T get(int index);
+        T get(int index) const;
 
         void set(int index, T newData);
 
-        bool contains(T& data);
+        bool contains(T& data) const;
 
         template<T> friend std::ostream& operator<<(std::ostream& output, const LinkedList<T>& list);
     };
@@ -43,7 +43,17 @@ namespace LinkedList {
     LinkedList<T>::LinkedList() : first(nullptr) {}
 
     template<typename T>
-    LinkedList<T>::~LinkedList() = default;
+    LinkedList<T>::~LinkedList()
+    {
+        Node<T>* currNode = first;
+        Node<T>* tempNode = nullptr;
+
+        while (currNode != nullptr) {
+            tempNode = currNode->next;
+            delete currNode;
+            currNode = tempNode;
+        }
+    }
 
     template<typename T>
     void LinkedList<T>::add(T data)
@@ -181,7 +191,7 @@ namespace LinkedList {
     }
 
     template<typename T>
-    int LinkedList<T>::size()
+    int LinkedList<T>::size() const
     {
         Node<T>* node = first;
 
@@ -195,7 +205,7 @@ namespace LinkedList {
     }
 
     template<typename T>
-    T LinkedList<T>::get(int index)
+    T LinkedList<T>::get(int index) const
     {
         Node<T>* node = first;
 
@@ -228,7 +238,7 @@ namespace LinkedList {
     }
 
     template<typename T>
-    bool LinkedList<T>::contains(T& data)
+    bool LinkedList<T>::contains(T& data) const
     {
         Node<T>* node = first;
 

@@ -88,7 +88,7 @@ void Maze::printMaze() const
 void Maze::writeSolution(const std::string& mazeName) const
 {
     std::ofstream file;
-    std::string newName = mazeName + " Solution";
+    std::string newName = "Solution " + mazeName;
     file.open(newName);
 
     for (int i = 0; i < this->height; i++) {

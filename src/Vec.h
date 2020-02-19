@@ -5,7 +5,8 @@
 // Class to hold a vector
 class Vec {
 public:
-    int y, x;
+    int y;
+    int x;
 
     bool operator==(const Vec& comparator) const;
 

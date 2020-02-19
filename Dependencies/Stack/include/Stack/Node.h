@@ -1,24 +1,24 @@
-#ifndef STACK_STACKNODE_H
-#define STACK_STACKNODE_H
+#ifndef STACK_NODE_H
+#define STACK_NODE_H
 
 namespace Stack
 {
     template <typename T>
-    class StackNode
+    class Node
     {
     public:
         T data;
-        StackNode* prev;
+        Node* prev;
 
-        explicit StackNode(T& data)
+        explicit Node(T& data)
         {
             this->data = data;
             this->prev = nullptr;
         }
 
-        ~StackNode() = default;
+        ~Node() = default;
     };
 }
 
 
-#endif //STACK_STACKNODE_H
+#endif //STACK_NODE_H

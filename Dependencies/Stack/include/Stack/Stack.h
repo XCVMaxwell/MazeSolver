@@ -10,12 +10,12 @@ namespace Stack
     class Stack
     {
     private:
-        StackNode<T>* last;
+        Node<T>* last;
 
     public:
         Stack();
 
-        virtual ~Stack();
+        ~Stack();
 
         void push(T& data);
 
@@ -25,19 +25,29 @@ namespace Stack
 
         int size() const;
 
-        StackNode<T>* top() const;
+        Node<T>* top() const;
     };
 
     template<typename T>
     Stack<T>::Stack() : last(nullptr) {}
 
     template<typename T>
-    Stack<T>::~Stack() = default;
+    Stack<T>::~Stack()
+    {
+        Node<T>* currNode = last;
+        Node<T>* tempNode = nullptr;
+
+        while (currNode != nullptr) {
+            tempNode = currNode->prev;
+            delete currNode;
+            currNode = tempNode;
+        }
+    }
 
     template<typename T>
     void Stack<T>::push(T& data)
     {
-        auto* node = new StackNode<T>(data);
+        auto* node = new Node<T>(data);
 
         if (last == nullptr) {
             last = node;
@@ -55,7 +65,7 @@ namespace Stack
             return false;
         }
         else {
-            StackNode<T>* temp = last->prev;
+            Node<T>* temp = last->prev;
 
             delete last;
 
@@ -74,7 +84,7 @@ namespace Stack
     template<typename T>
     int Stack<T>::size() const
     {
-        StackNode<T>* node = last;
+        Node<T>* node = last;
 
         int count = 0;
         while (node != nullptr) {
@@ -87,7 +97,7 @@ namespace Stack
     }
 
     template<typename T>
-    StackNode<T>* Stack<T>::top() const
+    Node<T>* Stack<T>::top() const
     {
         return last;
     }

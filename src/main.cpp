@@ -24,7 +24,7 @@ Vec findEnd(const Maze& maze)
 
 // Finds a neighbor of a vector that the current node can move to
 // Checks S, E, N, W
-Vec findNeighbour(std::string* maze, LinkedList::LinkedList<char> walls, Vec currPos)
+Vec findNeighbour(std::string* maze, const LinkedList::LinkedList<char>& walls, Vec currPos)
 {
     if (!walls.contains(maze[currPos.y + 1][currPos.x]))
         return Vec{currPos.y + 1, currPos.x};
