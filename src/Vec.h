@@ -8,7 +8,6 @@ public:
     int y;
     int x;
 
-    Vec() = default;
     ~Vec() = default;
     
     bool operator!=(const Vec& comparator) const;

@@ -5,8 +5,8 @@
 #include "Vec.h"
 #include <memory>
 #include <future>
-
-#define SPTR_LINKEDLIST std::shared_ptr<LinkedList::LinkedList<char>>
+#include <array>
+#include <string>
 
 // Finds the beginning of the maze and returns it in a vector
 Vec findBeginning(const Maze& maze)
@@ -28,7 +28,7 @@ Vec findEnd(const Maze& maze)
 
 // Finds a neighbor of a vector that the current node can move to
 // Checks S, E, N, W
-Vec findNeighbour(std::string* maze, const SPTR_LINKEDLIST walls, const Vec& currPos)
+Vec findNeighbour(std::string* maze, const std::shared_ptr<LinkedList::LinkedList<char>> walls, const Vec& currPos)
 {
     if (!walls->contains(maze[currPos.y + 1][currPos.x]))
         return Vec{currPos.y + 1, currPos.x};
@@ -45,7 +45,7 @@ Vec findNeighbour(std::string* maze, const SPTR_LINKEDLIST walls, const Vec& cur
     return Vec{-1, -1};
 }
 
-std::shared_ptr<Maze> solveMaze(const SPTR_LINKEDLIST walls, std::string name)
+std::shared_ptr<Maze> solveMaze(const std::shared_ptr<LinkedList::LinkedList<char>> walls, std::string name)
 {
     std::cout << "Solving maze: " << name << std::endl;
 
@@ -85,17 +85,17 @@ std::shared_ptr<Maze> solveMaze(const SPTR_LINKEDLIST walls, std::string name)
 
 int main()
 {
-    const std::vector<std::string> mazeNames{"maze.txt", "maze2.txt", "maze3.txt", "maze4.txt", "mazex.txt"};
-    SPTR_LINKEDLIST walls = std::make_shared<LinkedList::LinkedList<char>>();
+    const std::array<std::string, 5> mazeNames{ "maze.txt", "maze2.txt", "maze3.txt", "maze4.txt", "mazex.txt" };
+    auto walls = std::make_shared<LinkedList::LinkedList<char>>();
     walls->add('+');
     walls->add('-');
     walls->add('|');
     walls->add('*');
     walls->add('#');
-    
-    std::vector<std::future<std::shared_ptr<Maze>>> futures;
-    for (const std::string& name : mazeNames) {
-        futures.push_back(std::async(std::launch::async, solveMaze, walls, name));
+
+    std::array<std::future<std::shared_ptr<Maze>>, mazeNames.size()> futures;
+    for (int i = 0; i < futures.size(); i++) {
+        futures[i] = std::async(std::launch::async, solveMaze, walls, mazeNames[i]);
     }
 
     for (int i = 0; i < futures.size(); i++) {

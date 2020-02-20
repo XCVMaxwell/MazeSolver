@@ -119,6 +119,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Stack\include\;$(ProjectDir)Dependencies\LinkedList\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\Stack\lib\;$(SolutionDir)Dependencies\LinkedList\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

@@ -25,7 +25,7 @@ void Maze::determineDimensions(const std::string& fileName)
                 line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
                 line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
-                this->width = (uint16_t) line.size() - 1;
+                this->width = line.size() - 1;
             }
 
             count++;
