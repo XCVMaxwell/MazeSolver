@@ -3,6 +3,10 @@
 #include "Maze.h"
 #include <LinkedList/LinkedList.h>
 #include "Vec.h"
+#include <memory>
+#include <future>
+
+#define SPTR_LINKEDLIST std::shared_ptr<LinkedList::LinkedList<char>>
 
 // Finds the beginning of the maze and returns it in a vector
 Vec findBeginning(const Maze& maze)
@@ -24,70 +28,83 @@ Vec findEnd(const Maze& maze)
 
 // Finds a neighbor of a vector that the current node can move to
 // Checks S, E, N, W
-Vec findNeighbour(std::string* maze, const LinkedList::LinkedList<char>& walls, Vec currPos)
+Vec findNeighbour(std::string* maze, const SPTR_LINKEDLIST walls, const Vec& currPos)
 {
-    if (!walls.contains(maze[currPos.y + 1][currPos.x]))
+    if (!walls->contains(maze[currPos.y + 1][currPos.x]))
         return Vec{currPos.y + 1, currPos.x};
-
-    else if (!walls.contains(maze[currPos.y][currPos.x + 1]))
+    
+    else if (!walls->contains(maze[currPos.y][currPos.x + 1]))
         return Vec{currPos.y, currPos.x + 1};
 
-    else if (!walls.contains(maze[currPos.y - 1][currPos.x]))
+    else if (!walls->contains(maze[currPos.y - 1][currPos.x]))
         return Vec{currPos.y - 1, currPos.x};
 
-    else if (!walls.contains(maze[currPos.y][currPos.x - 1]))
+    else if (!walls->contains(maze[currPos.y][currPos.x - 1]))
         return Vec{currPos.y, currPos.x - 1};
 
     return Vec{-1, -1};
 }
 
+std::shared_ptr<Maze> solveMaze(const SPTR_LINKEDLIST walls, std::string name)
+{
+    std::cout << "Solving maze: " << name << std::endl;
+
+    auto solution = std::make_unique<Stack::Stack<Vec>>();
+    auto maze = std::make_shared<Maze>(name);
+
+    if (maze == nullptr)
+        return nullptr;
+
+    Vec beginning = findBeginning(*maze);
+    Vec end = findEnd(*maze);
+
+    Vec currPos = beginning;
+    while (currPos != end) {
+        Vec neighbour = findNeighbour(maze->maze, walls, currPos);
+
+        if (neighbour.y != -1 && neighbour.x != -1) {
+            solution->push(currPos);
+            maze->maze[solution->top()->data.y][solution->top()->data.x] = '#';
+
+            currPos = neighbour;
+        }
+        else {
+            maze->maze[currPos.y][currPos.x] = '*';
+            maze->maze[solution->top()->data.y][solution->top()->data.x] = '*';
+            solution->pop();
+
+            currPos = solution->top()->data;
+        }
+    }
+
+    maze->maze[currPos.y][currPos.x] = '#';
+
+    std::cout << "Finished solving maze: " << name << std::endl;
+    return maze;
+}
+
 int main()
 {
-    std::string mazeNames[5]{"maze.txt", "maze2.txt", "maze3.txt", "maze4.txt", "mazex.txt"};
-
-    auto* walls = new LinkedList::LinkedList<char>();
+    const std::vector<std::string> mazeNames{"maze.txt", "maze2.txt", "maze3.txt", "maze4.txt", "mazex.txt"};
+    SPTR_LINKEDLIST walls = std::make_shared<LinkedList::LinkedList<char>>();
     walls->add('+');
     walls->add('-');
     walls->add('|');
     walls->add('*');
     walls->add('#');
-
+    
+    std::vector<std::future<std::shared_ptr<Maze>>> futures;
     for (const std::string& name : mazeNames) {
-        auto* solution = new Stack::Stack<Vec>();
-        Maze* maze = new Maze(name);
+        futures.push_back(std::async(std::launch::async, solveMaze, walls, name));
+    }
 
-        if (maze == nullptr)
-            return 1;
+    for (int i = 0; i < futures.size(); i++) {
+        std::shared_ptr<Maze> maze = futures[i].get();
 
-        Vec beginning = findBeginning(*maze);
-        Vec end = findEnd(*maze);
-
-        Vec currPos = beginning;
-        while (currPos != end) {
-            Vec neighbour = findNeighbour(maze->maze, *walls, currPos);
-
-            if (neighbour.y != -1 && neighbour.x != -1) {
-                solution->push(currPos);
-                maze->maze[solution->top()->data.y][solution->top()->data.x] = '#';
-
-                currPos = neighbour;
-            } else {
-                maze->maze[currPos.y][currPos.x] = '*';
-                maze->maze[solution->top()->data.y][solution->top()->data.x] = '*';
-                solution->pop();
-
-                currPos = solution->top()->data;
-            }
-        }
-
-        maze->maze[currPos.y][currPos.x] = '#';
-
-        std::cout << std::endl << name << ":" << std::endl;
+        std::cout << mazeNames[i] << ":" << std::endl;
         maze->printMaze();
-        maze->writeSolution(name);
 
-        delete solution;
-        delete maze;
+        maze->writeSolution(mazeNames[i]);
     }
 
     std::cin.get();

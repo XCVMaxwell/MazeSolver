@@ -5,7 +5,7 @@
 #include <string>
 #include "Maze.h"
 
-Maze::Maze(const std::string &fileName)
+Maze::Maze(const std::string& fileName)
 {
     determineDimensions(fileName);
     loadMaze(fileName);
@@ -69,7 +69,7 @@ void Maze::printMaze() const
     SetConsoleMode(handle, ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 
     for (int i = 0; i < this->height; i++) {
-        for (int j = 0; j <= this->width; ++j) {
+        for (int j = 0; j <= this->width; j++) {
             if (this->maze[i][j] == '*')
                 std::cout << ' ';
 
@@ -78,7 +78,6 @@ void Maze::printMaze() const
 
             else
                 std::cout << this->maze[i][j];
-
         }
         std::cout << std::endl;
     }
